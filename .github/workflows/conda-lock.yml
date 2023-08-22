@@ -1,0 +1,46 @@
+# Runs conda-lock against environment.yml for reproducible environments
+# Runs on any opened PR
+name: Conda Lock
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  condalock:
+    # Only run on Pull Requests, when a comment with '/condalock' is made
+    if: ${{ github.event.issue.pull_request }} && contains(github.event.comment.body, '/condalock')
+    permissions:
+      contents: write  # for Git to git push
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      # Checkout the pull request branch
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          # token: ${{ steps.generate-token.outputs.token }}
+          repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.client_payload.pull_request.head.ref }}
+
+      # Run conda-lock GitHub Action
+      - name: Run conda-lock
+        uses: weiji14/conda-lock-refresh@5525d3fd746de3709ac623e1895303e239baf6ed
+        with:
+          file: "environment.yml"
+          platform: "linux-64"
+
+      # Add an emoji reaction to comment to indicate the script completed successfully
+      - name: Add reaction
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          reaction-type: hooray
