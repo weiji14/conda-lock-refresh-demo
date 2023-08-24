@@ -4,7 +4,7 @@ name: Conda Lock
 
 on:
   issue_comment:
-    types: [created, edited]
+    types: [created]
 
 permissions:
   contents: read
@@ -22,6 +22,14 @@ jobs:
         shell: bash -l {0}
 
     steps:
+      # Add an emoji reaction to comment to indicate the script is starting
+      - name: Add reaction
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.comment.id }}
+          reaction-type: eyes
+
       # Checkout the pull request branch
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -29,6 +37,14 @@ jobs:
           # token: ${{ steps.generate-token.outputs.token }}
           repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
           ref: ${{ github.event.client_payload.pull_request.head.ref }}
+
+      # Add an emoji reaction to comment to indicate that conda-lock is starting
+      - name: Add reaction
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.comment.id }}
+          reaction-type: rocket
 
       # Run conda-lock GitHub Action
       - name: Run conda-lock
@@ -39,8 +55,8 @@ jobs:
 
       # Add an emoji reaction to comment to indicate the script completed successfully
       - name: Add reaction
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         with:
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
-          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          comment-id: ${{ github.event.comment.id }}
           reaction-type: hooray
