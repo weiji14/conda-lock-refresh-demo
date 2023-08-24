@@ -28,7 +28,7 @@ jobs:
         with:
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.comment.id }}
-          reaction-type: eyes
+          reactions: eyes
 
       # Checkout the pull request branch
       - name: Checkout Repository
@@ -43,7 +43,7 @@ jobs:
         with:
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.comment.id }}
-          reaction-type: rocket
+          reactions: rocket
 
       # Run conda-lock GitHub Action
       - name: Run conda-lock
@@ -58,4 +58,4 @@ jobs:
         with:
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.comment.id }}
-          reaction-type: hooray
+          reactions: hooray
