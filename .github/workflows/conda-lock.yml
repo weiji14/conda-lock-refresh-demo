@@ -9,7 +9,7 @@ on:
 jobs:
   condalock:
     # Only run on Pull Requests, when a comment with '/condalock' is made
-    if: ${{ github.event.issue.pull_request }} && contains(github.event.comment.body, '/condalock')
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/condalock')
     permissions:
       contents: write  # to git push added/changed files
       pull-requests: write  # for adding reactions to pull request comments
